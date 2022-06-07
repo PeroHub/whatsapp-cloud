@@ -7,11 +7,29 @@
 
 "use strict";
 require('dotenv').config()
+const mongoose = require("mongoose");
+const { Message } = require("./message.model")
+
+const db = mongoose
 
 // Access token for your app
 // (copy token from DevX getting started page
 // and save it as environment variable into the .env file)
 const token = process.env.WHATSAPP_TOKEN;
+
+const connectionString = process.env.MONGO_URL
+
+db.connect(connectionString, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log("Successfully connected to MongoDB.");
+    })
+    .catch((err) => {
+        console.error("Connection error", err);
+        process.exit();
+    });
 
 // Imports dependencies and set up http server
 const request = require("request"),
@@ -88,6 +106,8 @@ app.get("/webhook", (req, res) => {
       if (mode === "subscribe" && token === verify_token) {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");
+        let data = new Message(challenge)
+        data.save()
         res.status(200).send(challenge);
       } else {
         // Responds with '403 Forbidden' if verify tokens do not match
