@@ -107,10 +107,14 @@ app.get("/webhook", async(req, res) => {
       if (mode === "subscribe" && token === verify_token) {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");
-        let data = await new Message(challenge).catch(error => {
+        try{
+            await Message.create({
+                data: challenge
+            })
+        }catch (error){
+            // return res.status(400).json(error)
             console.log(error)
-        })
-        data.save()
+        }
         res.status(200).send(challenge);
       } else {
         // Responds with '403 Forbidden' if verify tokens do not match
