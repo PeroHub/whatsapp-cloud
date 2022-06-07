@@ -108,6 +108,7 @@ app.get("/webhook", async(req, res) => {
         // Respond with 200 OK and challenge token from the request
         console.log("WEBHOOK_VERIFIED");
         try{
+            console.log("saving to db")
             await Message.create({
                 data: challenge
             })
