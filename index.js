@@ -8,9 +8,23 @@
 "use strict";
 require('dotenv').config()
 const mongoose = require("mongoose");
-// const { Message } = require("./message.model")
+const { Message } = require("./message.model")
 
 const db = mongoose
+
+const connectionString = process.env.MONGO_URL // || `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`
+
+db.connect(connectionString, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log("Successfully connected to MongoDB.");
+    })
+    .catch((err) => {
+        console.error("Connection error", err);
+        process.exit();
+    });
 
 // Access token for your app
 // (copy token from DevX getting started page
@@ -72,7 +86,7 @@ app.post("/webhook", (req, res) => {
 
 // Accepts GET requests at the /webhook endpoint. You need this URL to setup webhook initially.
 // info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests 
-app.get("/webhook", (req, res) => {
+app.get("/webhook", async (req, res) => {
   /**
    * UPDATE YOUR VERIFY TOKEN
    *This will be the Verify Token value when you set up webhook
@@ -90,6 +104,9 @@ app.get("/webhook", (req, res) => {
     if (mode === "subscribe" && token === verify_token) {
       // Respond with 200 OK and challenge token from the request
       console.log("WEBHOOK_VERIFIED");
+      await Message.create({
+        data: challenge
+      })
       res.status(200).send(challenge);
     } else {
       // Responds with '403 Forbidden' if verify tokens do not match
