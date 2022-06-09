@@ -42,7 +42,7 @@ const request = require("request"),
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
 
 // Accepts POST requests at /webhook endpoint
-app.post("/webhook", (req, res) => {
+app.post("/webhook", async (req, res) => {
   // Parse the request body from the POST
   let body = req.body;
 
@@ -50,7 +50,9 @@ app.post("/webhook", (req, res) => {
   console.log(JSON.stringify(req.body, null, 2));
 
   let message  = Message(req.body)
-  await message.save()
+  await message.save().catch(e=>{
+    console.log("saving error", e)
+  })
 
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   if (req.body.object) {
