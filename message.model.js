@@ -2,11 +2,9 @@ const mongoose = require("mongoose")
 
 const Message = mongoose.model(
     "Message",
-    new mongoose.Schema({
-        data: Array
-    },
+    new mongoose.Schema({},
     {
-        timestamps: true,
+        timestamps: true, strict:false
     })
 )
 
