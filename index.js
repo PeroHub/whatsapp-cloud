@@ -8,6 +8,7 @@
 "use strict";
 require('dotenv').config()
 const mongoose = require("mongoose");
+const cors = require('cors')
 const { Message } = require("./message.model")
 
 const db = mongoose
@@ -37,6 +38,7 @@ const request = require("request"),
   body_parser = require("body-parser"),
   axios = require("axios").default,
   app = express().use(body_parser.json()); // creates express http server
+  app.use(cors())
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening"));
