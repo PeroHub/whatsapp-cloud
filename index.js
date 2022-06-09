@@ -80,6 +80,8 @@ app.post("/webhook", async (req, res) => {
           text: { body: "Ack: " + msg_body },
         },
         headers: { "Content-Type": "application/json" },
+      }).catch(e=>{
+        console.log("axios error",e)
       });
     }
     res.sendStatus(200);
@@ -118,4 +120,17 @@ app.get("/webhook", async (req, res) => {
       res.sendStatus(403);
     }
   }
+});
+
+// / info on verification request payload: https://developers.facebook.com/docs/graph-api/webhooks/getting-started#verification-requests 
+app.get("/messages", async (req, res) => {
+  let message = await Message.find({}).catch((e)=>{
+    if(e){
+      return {error:"database error"}
+    }
+  })
+  if(message.error){
+    return res.status(400).send(message)
+  }
+  res.status(200).send(message)
 });
